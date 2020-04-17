@@ -27,8 +27,8 @@ jobs:
 
       - name: Download firmware
         run: |
-          REF=${${{ github.event.client_payload.ref }}:-$GITHUB_REF}
-          VERSION="${REF/refs\/tags\//}"
+          V=${{ github.event.client_payload.version }}
+          VERSION=${V:-${GITHUB_REF/refs\/tags\//}}
           echo "::set-env name=VERSION::$VERSION"
           YEAR="${VERSION:6:4}"
           echo "::set-env name=YEAR::$YEAR"
