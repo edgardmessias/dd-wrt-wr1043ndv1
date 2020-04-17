@@ -21,12 +21,18 @@ jobs:
           VERSION=$(curl -s -l "$BASE_URL/" | tail -1)
           echo "::set-env name=VERSION::$VERSION"
 
+      - name: Get version list
+        uses: exelban/watch-tag@master
+        with:
+          repository: ${{ github.repository }}
+          export_list: true
+
       - name: Tag commit
         uses: tvdias/github-tagger@v0.0.1
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           tag: "${{ env.VERSION }}"
-        continue-on-error: true
+        if: ${{ !contains(env.WT_LIST, env.VERSION) }}
 
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v1
@@ -35,4 +41,4 @@ jobs:
           repository: ${{ github.repository }}
           event-type: run-release
           client-payload: '{"version": "${{ env.VERSION }}", "ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
-        if: success()
+        if: ${{ !contains(env.WT_LIST, env.VERSION) }}
