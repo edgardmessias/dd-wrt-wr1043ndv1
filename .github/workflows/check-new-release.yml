@@ -27,3 +27,12 @@ jobs:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           tag: "${{ env.VERSION }}"
         continue-on-error: true
+
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          event-type: run-release
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
+        if: success()

@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - "*"
+  repository_dispatch:
+    types: [run-release]
 
 jobs:
   release:
@@ -25,7 +27,8 @@ jobs:
 
       - name: Download firmware
         run: |
-          VERSION="${GITHUB_REF/refs\/tags\//}"
+          REF=${${{ github.event.client_payload.ref }}:-$GITHUB_REF}
+          VERSION="${REF/refs\/tags\//}"
           echo "::set-env name=VERSION::$VERSION"
           YEAR="${VERSION:6:4}"
           echo "::set-env name=YEAR::$YEAR"
