@@ -1,0 +1,29 @@
+name: check-new-release
+
+on:
+  push:
+    branches:
+      - "*"
+  schedule:
+    - cron: "0 * * * *"
+
+jobs:
+  check-new-release:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Check new version
+        run: |
+          BASE_URL="ftp://ftp.dd-wrt.com/betas/$(date +'%Y')"
+          VERSION=$(curl -s -l "$BASE_URL/" | tail -1)
+          echo "::set-env name=VERSION::$VERSION"
+
+      - name: Tag commit
+        uses: tvdias/github-tagger@v0.0.1
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          tag: "${{ env.VERSION }}"
+        continue-on-error: true

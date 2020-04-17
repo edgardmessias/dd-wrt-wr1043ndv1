@@ -3,6 +3,7 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/edgardmessias/dd-wrt-wr1043ndv1)
 ![GitHub All Releases](https://img.shields.io/github/downloads/edgardmessias/dd-wrt-wr1043ndv1/total)
 ![release](https://github.com/edgardmessias/dd-wrt-wr1043ndv1/workflows/release/badge.svg)
+![check-update](https://github.com/edgardmessias/dd-wrt-wr1043ndv1/workflows/check-update/badge.svg)
 
 
 Builds before [r33375](https://svn.dd-wrt.com/changeset/33375) (09/19/17) used "DD-WRT" as the string at the start of the firmware, and since that build they're all using "TP-LINK Technologies". Mtd partition code was looking for the wrong string to detect the bootloader size and upgrade via the web interface is not possible.
