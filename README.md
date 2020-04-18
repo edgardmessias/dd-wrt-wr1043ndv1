@@ -16,6 +16,7 @@ Latest DD-WRT firmwares for WR1043ND V1 ![GitHub release (latest by date)](https
 - [factory-to-ddwrt.bin](https://github.com/edgardmessias/dd-wrt-wr1043ndv1/releases/latest/download/factory-to-ddwrt.bin): from TP-LINK to DD-WRT
 - [tl-wr1043nd-webflash.bin](https://github.com/edgardmessias/dd-wrt-wr1043ndv1/releases/latest/download/tl-wr1043nd-webflash.bin): DD-WRT upgrade
 - [wr1043nv1_tp_recovery.bin](https://github.com/edgardmessias/dd-wrt-wr1043ndv1/releases/latest/download/wr1043nv1_tp_recovery.bin): TTFT Recovery
+- [md5sum.txt](https://github.com/edgardmessias/dd-wrt-wr1043ndv1/releases/latest/download/md5sum.txt): MD5 checksum file
 
 Links:
 

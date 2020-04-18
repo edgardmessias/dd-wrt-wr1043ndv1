@@ -56,6 +56,12 @@ jobs:
           cat factory-to-ddwrt.bin >> $TFTP_NAME
           cat end_firmware.bin     >> $TFTP_NAME
 
+      - name: Generate md5sum file
+        run: |
+          md5sum factory-to-ddwrt.bin > md5sum.txt
+          md5sum "$FILE_NAME"        >> md5sum.txt
+          md5sum "$TFTP_NAME"        >> md5sum.txt
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -70,6 +76,7 @@ jobs:
             * [factory-to-ddwrt.bin](https://github.com/${{ github.repository }}/releases/download/${{ env.VERSION }}/factory-to-ddwrt.bin): from TP-LINK to DD-WRT
             * [${{ env.FILE_NAME }}](https://github.com/${{ github.repository }}/releases/download/${{ env.VERSION }}/${{ env.FILE_NAME }}): DD-WRT upgrade
             * [${{ env.TFTP_NAME }}](https://github.com/${{ github.repository }}/releases/download/${{ env.VERSION }}/${{ env.TFTP_NAME }}): TTFT Recovery
+            * [md5sum.txt](https://github.com/${{ github.repository }}/releases/download/${{ env.VERSION }}/md5sum.txt): MD5 checksum file
 
             Source: https://download1.dd-wrt.com/dd-wrtv2/downloads/betas/${{ env.YEAR }}/${{ env.VERSION }}/${{ env.FOLDER }}/
           draft: false
@@ -104,3 +111,13 @@ jobs:
           asset_path: ${{ env.TFTP_NAME }}
           asset_name: ${{ env.TFTP_NAME }}
           asset_content_type: application/octet-stream
+
+      - name: Upload TFTP recovery
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: md5sum.txt
+          asset_name: md5sum.txt
+          asset_content_type: text/plain
