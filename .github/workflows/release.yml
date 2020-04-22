@@ -32,21 +32,7 @@ jobs:
           echo "::set-env name=VERSION::$VERSION"
           YEAR="${VERSION:6:4}"
           echo "::set-env name=YEAR::$YEAR"
-          curl "ftp://ftp.dd-wrt.com/betas/$YEAR/$VERSION/$FOLDER/$FILE_NAME" -o "$FILE_NAME"
-
-      # 44442D575254 -> DD-WRT
-      - name: Fix Header Vendor
-        run: echo 0:44442D57525400000000000000000000 | xxd -r | dd of="$FILE_NAME" conv=notrunc bs=1 seek=$((0x20))
-
-      # 3234 -> 24
-      - name: Fix Header Version
-        run: echo 0:00000000000000003234000000000000 | xxd -r | dd of="$FILE_NAME" conv=notrunc bs=1 seek=$((0x30))
-
-      - name: Fix Checksum
-        run: crcalc "$FILE_NAME"
-
-      - name: Generate factory to DD-WRT version
-        run: dd if="$FILE_NAME" of="factory-to-ddwrt.bin" bs=1 skip=28
+          curl "ftp://ftp.dd-wrt.com/betas/$YEAR/$VERSION/$FOLDER/factory-to-ddwrt.bin" -o "factory-to-ddwrt.bin"
 
       - name: Generate TFTP recovery version
         run: |
@@ -59,8 +45,6 @@ jobs:
       - name: Generate md5sum file
         run: |
           md5sum factory-to-ddwrt.bin > md5sum.txt
-          md5sum "$FILE_NAME"        >> md5sum.txt
-          md5sum "$TFTP_NAME"        >> md5sum.txt
 
       - name: Create Release
         id: create_release
@@ -73,34 +57,12 @@ jobs:
           body: |
             ## ${{ env.VERSION }} ![GitHub Releases](https://img.shields.io/github/downloads/${{ github.repository }}/${{ env.VERSION }}/total)
             DD-WRT firmwares for WR1043ND V1
-            * [factory-to-ddwrt.bin](https://github.com/${{ github.repository }}/releases/download/${{ env.VERSION }}/factory-to-ddwrt.bin): from TP-LINK to DD-WRT
-            * [${{ env.FILE_NAME }}](https://github.com/${{ github.repository }}/releases/download/${{ env.VERSION }}/${{ env.FILE_NAME }}): DD-WRT upgrade
             * [${{ env.TFTP_NAME }}](https://github.com/${{ github.repository }}/releases/download/${{ env.VERSION }}/${{ env.TFTP_NAME }}): TTFT Recovery
             * [md5sum.txt](https://github.com/${{ github.repository }}/releases/download/${{ env.VERSION }}/md5sum.txt): MD5 checksum file
 
             Source: https://download1.dd-wrt.com/dd-wrtv2/downloads/betas/${{ env.YEAR }}/${{ env.VERSION }}/${{ env.FOLDER }}/
           draft: false
           prerelease: false
-
-      - name: Upload factory to ddwrt
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: factory-to-ddwrt.bin
-          asset_name: factory-to-ddwrt.bin
-          asset_content_type: application/octet-stream
-
-      - name: Upload webflash
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.FILE_NAME }}
-          asset_name: ${{ env.FILE_NAME }}
-          asset_content_type: application/octet-stream
 
       - name: Upload TFTP recovery
         uses: actions/upload-release-asset@v1.0.1
@@ -112,7 +74,7 @@ jobs:
           asset_name: ${{ env.TFTP_NAME }}
           asset_content_type: application/octet-stream
 
-      - name: Upload TFTP recovery
+      - name: Upload md5sum file
         uses: actions/upload-release-asset@v1.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
